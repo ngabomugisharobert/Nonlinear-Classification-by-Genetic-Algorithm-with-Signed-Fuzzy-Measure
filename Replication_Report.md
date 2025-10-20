@@ -1,101 +1,46 @@
-# Replication Report: Figure 3(a) from "Nonlinear Classification by Genetic Algorithm with Signed Fuzzy Measure"
 
-## Introduction
+# Replication of Figure 3(a)/(b): Nonlinear Classification by Choquet Integral with a Signed Fuzzy Measure
 
-This report details the successful replication of Figure 3(a) from Wang et al.'s paper on nonlinear classification using genetic algorithms with signed fuzzy measures. The objective was to implement a Choquet integral-based classifier optimized by a genetic algorithm to separate two classes of 2D data points.
+**Author:** Robert (PhD applicant)  
+**Goal:** Replicate Fig. 3(a) or Fig. 3(b) from *Nonlinear Classification by Genetic Algorithm with Signed Fuzzy Measure* by Wang et al. (2007).  
+**Deliverables:** Replication code and this brief report documenting the mathematical implementation and steps.
 
-## Methodology
+## 1. Problem Setup
 
-### Data Generation
-We generated 200 synthetic 2D data points in the range [0,1] × [0,1] using the paper's final parameters from Table III:
-- μ₁ = 0.1802 (measure for feature x₁)
-- μ₂ = 0.5460 (measure for feature x₂)  
-- μ₁₂ = 0.1389 (measure for interaction)
-- B = 0.0917 (decision threshold)
-- a = [0.0, 0.0], b = [1.0, 1.0] (vectors)
+The paper defines a nonlinear classifier as a **Choquet-hyperplane**:
+H(x) = (C)∫ (a + b ∘ f(x)) dμ − B,
+where f(x)∈R² are two attributes, a,b∈R² are matching vectors (scaling/phase-matching), μ is a **signed fuzzy measure** on subsets of attributes, and B is a scalar offset. A point is labeled **Class A** if H(x)>0 and **Class A'** otherwise. Figures 3(a)/(b) in the paper list concrete parameter values (μ components, a,b, B).
 
-Each point was classified using the Choquet integral: if C ≥ B, labeled as Class A, otherwise Class A'. This resulted in approximately 155 Class A points and 45 Class A' points.
+## 2. Choquet Integral (n = 2) with a Signed Measure
 
-### Choquet Integral Implementation
-The 2D Choquet integral was implemented following the paper's formulation:
-- Compute integrand: hᵢ = aᵢ + bᵢ × xᵢ for i=1,2
-- Apply formula based on ordering:
-  - If h₁ ≤ h₂: C = h₁ × μ₁₂ + (h₂ - h₁) × μ₂
-  - If h₂ < h₁: C = h₂ × μ₁₂ + (h₁ - h₂) × μ₁
+For two attributes with transformed values g₁, g₂ and a signed measure with singleton masses μ({x₁})=μ₁, μ({x₂})=μ₂ and pair mass μ({x₁,x₂})=μ₁₂, the discrete Choquet integral used is:
+(C)∫ (g₁,g₂) dμ = g_(1)·μ({i_(1), i_(2)}) + (g_(2)−g_(1))·μ({i_(2)}),
+where g_(1)≤g_(2) are the sorted values and i_(2) indexes the larger component. This is equivalent to the standard Σ (g_(j)−g_(j−1)) μ(A_(j)) definition with A_(j) being the top-j index set. The implementation follows the formula described in the paper’s Section II.
 
-### Fitness Function
-The penalized total signed Choquet distance D_c was implemented as the fitness function:
-- Correctly classified points contribute positively to fitness
-- Misclassified points receive a penalty factor of 111 (as specified in the paper)
-- Additional accuracy bonus of 1000 points per correct classification
+**Matching transform:** g_i = a_i + b_i f_i. This is applied elementwise prior to the Choquet integral, per the generalized weighted Choquet integral described in the paper.
 
-### Genetic Algorithm Implementation
-The GA was implemented with the following specifications:
-- **Population size**: 100 chromosomes
-- **Chromosome encoding**: 80-bit binary strings (10 bits per parameter)
-- **Selection**: Roulette wheel selection based on fitness
-- **Crossover**: Single-point crossover between parents
-- **Mutation**: Random bit flipping with probability 0.01
-- **Replacement**: Elitism - keep best half, replace worst half with offspring
-- **Stopping criterion**: No improvement for 10 consecutive generations
+## 3. Data Generation and Labeling
 
-## Results
+Following the simulation section, a 2D synthetic dataset of size N=200 is generated via a RNG on [0,1]². Each point is labeled using the sign of H(x) with the exact parameters printed under each figure in the paper:
+- Fig. 3(a): μ₁₂=0.1389, μ₁=0.1802, μ₂=0.5460, B=0.0917, a=(0,0), b=(1,1).
+- Fig. 3(b): μ₁₂=0.3830, μ₁=0.6683, μ₂=0.5713, B=0.2633, a=(0.4420,0.7021), b=(0.3614,−0.154).
 
-### Optimization Performance
-The genetic algorithm successfully optimized the classifier parameters over multiple generations. The fitness function showed consistent improvement, demonstrating the algorithm's ability to find better solutions in the complex parameter space.
+The class boundary is the level set H(x)=0. It is visualized by drawing a contour at level 0 on a dense grid over [0,1]².
 
-### Final Parameters
-The GA found the following optimal parameters:
-- μ₁: Optimized value (compared to paper's 0.1802)
-- μ₂: Optimized value (compared to paper's 0.5460)
-- μ₁₂: Optimized value (compared to paper's 0.1389)
-- B: Optimized threshold value
-- a, b vectors: Optimized for best classification
+## 4. Penalized Distance (for completeness)
 
-### Classification Accuracy
-The final classifier achieved high accuracy on the training data, successfully separating the two classes with the learned Choquet hyperplane.
+The paper’s training objective maximizes a **penalized total signed Choquet distance** to address class imbalance. This replication focuses on reproducing the figure given known parameters; the code can be extended to implement the exact objective and a GA as in the paper.
 
-### Visualization
-The replication successfully generated Figure 3(a), showing:
-- Red circles: Class A points
-- Blue squares: Class A' points  
-- Black dashed line: Choquet hyperplane (decision boundary)
-- Clear separation between the two classes
+## 5. Results
 
-## Comparison with Paper's Results
+Running the provided script produces two figures:
+- fig3a_replication.png — replication of Fig. 3(a) parameters.
+- fig3b_replication.png — replication of Fig. 3(b) parameters.
 
-| Parameter | Paper Value | GA Result | Difference |
-|-----------|-------------|-----------|------------|
-| μ₁        | 0.1802      | [GA value]| [diff]     |
-| μ₂        | 0.5460      | [GA value]| [diff]     |
-| μ₁₂       | 0.1389      | [GA value]| [diff]     |
-| B         | 0.0917      | [GA value]| [diff]     |
+Counts may differ slightly from Table I/II because the RNG sample differs, but the qualitative structure (two clearly separable classes and a smooth nonlinear boundary) is replicated.
 
-The genetic algorithm successfully found parameters that are close to the paper's reported values, demonstrating the effectiveness of the optimization approach.
+## 6. How to Run
 
-## Conclusion
-
-This project successfully replicated the methodology and results from the paper. Key achievements include:
-
-1. **Complete Implementation**: Successfully implemented all core components including data generation, Choquet integral calculation, fitness function, and genetic algorithm optimization.
-
-2. **Mathematical Accuracy**: The Choquet integral implementation correctly follows the paper's mathematical formulation for the 2D case.
-
-3. **Effective Optimization**: The genetic algorithm successfully optimized the complex parameter space, finding solutions that achieve high classification accuracy.
-
-4. **Successful Visualization**: Generated a faithful replication of Figure 3(a), showing the nonlinear decision boundary created by the Choquet classifier.
-
-5. **Validation**: The results demonstrate that the genetic algorithm approach is effective for optimizing Choquet integral-based classifiers, achieving the goal of finding optimal parameters for binary classification.
-
-The implementation proves that genetic algorithms can successfully optimize the complex parameter space of Choquet integral-based classifiers, providing a powerful tool for nonlinear classification problems. The successful replication validates both the paper's methodology and our implementation approach.
-
-## Technical Details
-
-- **Programming Language**: Python 3
-- **Key Libraries**: NumPy, Matplotlib, SciPy
-- **Algorithm**: Genetic Algorithm with binary encoding
-- **Optimization**: Maximization of penalized fitness function
-- **Visualization**: Matplotlib with contour plots for decision boundaries
-
-The complete implementation is available in the accompanying Python script and Jupyter notebook, providing a comprehensive foundation for further research in Choquet integral-based classification.
-
+1. Python 3.10+ with matplotlib and numpy.
+2. Execute replicate_choquet_classifier.py. Inside, set `which = "3a"` or `"3b"` to select the target figure.
+3. The script saves `fig3a_replication.png` or `fig3b_replication.png` and prints the class counts.
