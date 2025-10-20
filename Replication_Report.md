@@ -1,7 +1,7 @@
 
 # Replication of Figure 3(a)/(b): Nonlinear Classification by Choquet Integral with a Signed Fuzzy Measure
 
-**Author:** Robert (PhD applicant)  
+**Author:** Robert Ngabo Mugisha(PhD applicant)  
 **Goal:** Replicate Fig. 3(a) or Fig. 3(b) from *Nonlinear Classification by Genetic Algorithm with Signed Fuzzy Measure* by Wang et al. (2007).  
 **Deliverables:** Replication code and this brief report documenting the mathematical implementation and steps.
 
@@ -44,3 +44,8 @@ Counts may differ slightly from Table I/II because the RNG sample differs, but t
 1. Python 3.10+ with matplotlib and numpy.
 2. Execute replicate_choquet_classifier.py. Inside, set `which = "3a"` or `"3b"` to select the target figure.
 3. The script saves `fig3a_replication.png` or `fig3b_replication.png` and prints the class counts.
+
+## References
+
+H. Wang et al., Nonlinear Classification by Genetic Algorithm with Signed Fuzzy Measure, IEEE 2007.
+
