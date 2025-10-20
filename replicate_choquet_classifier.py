@@ -50,7 +50,7 @@ params_3a = dict(mu=(0.1389, 0.1802, 0.5460), B=0.0917, a=(0.0, 0.0), b=(1.0, 1.
 params_3b = dict(mu=(0.3830, 0.6683, 0.5713), B=0.2633, a=(0.4420, 0.7021), b=(0.3614, -0.154))
 
 if __name__ == "__main__":
-    which = "3a"  # change to "3b" to replicate Fig 3(b)
+    which = "3b"  # change to "3b" to replicate Fig 3(b)
     if which == "3a":
         nA, nAprime, path = generate_and_plot(params_3a, N=200, seed=1, savepath="fig3a_replication.png",
                                               title="Replication of Fig 3(a) parameters")
